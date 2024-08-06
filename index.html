@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Directory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <div class="header">
+        <div id="headerImage" class="header-image"></div>
+        <!-- Image container -->
+        <a href="https://willhaight.github.io/DndRegPageDirectory/">Game Directory</a>
+        <a href="https://willhaight.github.io/DndEditorPageDirectory/">Editor Directory</a>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
+        import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-storage.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAn4VF9q_ALn5nGHoL9BW3HRir1YeUrtco",
+            authDomain: "dungeonapp-3f80a.firebaseapp.com",
+            projectId: "dungeonapp-3f80a",
+            storageBucket: "dungeonapp-3f80a.appspot.com",
+            messagingSenderId: "532180053044",
+            appId: "1:532180053044:web:8bf63c2be8f651010aee61"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+
+        // Reference to an image file in Firebase Storage
+        const imageRef = ref(storage, 'headerLogo.png');
+
+        // Get the download URL for the image
+        getDownloadURL(imageRef).then((url) => {
+            // Insert the image URL into the <div> element
+            const imgContainer = document.getElementById('headerImage');
+            imgContainer.style.backgroundImage = `url(${url})`;
+            imgContainer.style.backgroundSize = 'cover';  // Cover the container
+            imgContainer.style.backgroundPosition = 'center'; // Center the image
+        }).catch((error) => {
+            console.error('Error getting image URL:', error);
+        });
+    </script>
+</body>
+
+</html>
