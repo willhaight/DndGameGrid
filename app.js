@@ -17,3 +17,22 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 console.log('Firestore initialized');
+
+
+//navbar handling
+let navbar = document.getElementsByClassName('header')[0];
+
+navbar.onclick = function () {
+    // Toggle between 'expanded' and 'shrunk' classes
+    if (navbar.classList.contains('expanded')) {
+        navbar.classList.remove('expanded');
+        navbar.classList.add('shrunk');
+        navbar.children[1].style.display = 'none'
+        navbar.children[2].style.display = 'none'
+    } else {
+        navbar.classList.remove('shrunk');
+        navbar.classList.add('expanded');
+        navbar.children[1].style.display = 'block'
+        navbar.children[2].style.display = 'block'
+    }
+};
