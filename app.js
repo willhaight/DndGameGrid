@@ -1,6 +1,6 @@
 // Import the functions you need from the Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
-import { getFirestore, setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js";
+import { getFirestore, setDoc, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js";
 import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-storage.js";
 
 // Your web app's Firebase configuration
@@ -266,5 +266,53 @@ async function loadTileData() {
     }
 }
 
-// Initialize the grid on page load
+// Setup real-time listeners for tile and token data
+function setupRealTimeListeners() {
+    const tilesRef = doc(db, 'gridData', 'savedTiles');
+    const tokensRef = doc(db, 'gridData', 'savedTokens');
+
+    // Real-time listener for tile data
+    onSnapshot(tilesRef, async (snapshot) => {
+        if (snapshot.exists()) {
+            const tilesData = snapshot.data();
+            for (const [key, value] of Object.entries(tilesData)) {
+                const [x, y] = key.split('-').map(Number);
+                const selectedTile = document.getElementsByClassName('gridColumns')[x]?.children[y];
+
+                if (selectedTile) {
+                    selectedTile.style.backgroundImage = `url(${value.imageURL})`;
+                    selectedTile.style.backgroundSize = 'cover';
+                    selectedTile.style.backgroundPosition = 'center';
+                } else {
+                    console.error(`Tile at coordinates (${x}, ${y}) not found.`);
+                }
+            }
+        }
+    });
+
+    // Real-time listener for token data
+    onSnapshot(tokensRef, async (snapshot) => {
+        if (snapshot.exists()) {
+            const tokensData = snapshot.data();
+            for (const [key, value] of Object.entries(tokensData)) {
+                const [x, y] = key.split('-').map(Number);
+                const selectedTile = document.getElementsByClassName('gridColumns')[x]?.children[y];
+
+                if (selectedTile) {
+                    const url = await getDownloadURL(ref(storage, `tokens/${value}`));
+                    let img = document.createElement('img');
+                    img.src = url;
+                    img.classList.add('token-image');
+                    selectedTile.innerHTML = '';
+                    selectedTile.appendChild(img);
+                } else {
+                    console.error(`Tile at coordinates (${x}, ${y}) not found.`);
+                }
+            }
+        }
+    });
+}
+
+// Initialize the grid on page load and setup real-time listeners
 initializeGrid();
+setupRealTimeListeners();
