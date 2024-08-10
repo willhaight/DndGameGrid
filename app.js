@@ -1,6 +1,6 @@
 // Import the functions you need from the Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
-import { getFirestore, setDoc, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js";
+import { getFirestore, setDoc, doc, getDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js";
 import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-storage.js";
 
 // Your web app's Firebase configuration
@@ -44,10 +44,18 @@ async function initializeGrid() {
 let navbar = document.getElementsByClassName('header')[0];
 
 navbar.onclick = function () {
-    navbar.classList.toggle('expanded');
-    navbar.classList.toggle('shrunk');
-    navbar.children[1].style.display = navbar.classList.contains('expanded') ? 'block' : 'none';
-    navbar.children[2].style.display = navbar.classList.contains('expanded') ? 'block' : 'none';
+    // Toggle between 'expanded' and 'shrunk' classes
+    if (navbar.classList.contains('expanded')) {
+        navbar.classList.remove('expanded');
+        navbar.classList.add('shrunk');
+        navbar.children[1].style.display = 'none';
+        navbar.children[2].style.display = 'none';
+    } else {
+        navbar.classList.remove('shrunk');
+        navbar.classList.add('expanded');
+        navbar.children[1].style.display = 'block';
+        navbar.children[2].style.display = 'block';
+    }
 };
 
 // Exiting modal
@@ -64,6 +72,10 @@ document.getElementById('exitButton').onclick = function () {
 // Creating a new grid
 document.getElementById("gridCreator").onclick = async function () {
     if (confirm('Are you sure you want to create a new grid? The current grid will be reset.')) {
+
+        const docRef = doc(db, 'gridData', 'savedTiles');
+        await deleteDoc(docRef)
+
         document.getElementById('characterList').innerHTML = "";
         document.querySelectorAll('.content').forEach(content => content.style.display = "none");
         document.getElementById('modal').style.display = 'flex';
